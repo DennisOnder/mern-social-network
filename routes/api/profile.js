@@ -4,6 +4,7 @@ const passport = require('passport');
 const Profile = require('../../models/Profile');
 const User = require('../../models/User');
 const router = express.Router();
+const validateProfileInput = require('../../validation/profile');
 
 // @route  GET api/profile/test
 // @desc   Tests profile route
@@ -32,6 +33,12 @@ router.get('/', passport.authenticate('jwt', { session: false }), (req, res) => 
 // @desc   Create or edit user profile
 // @access Private
 router.post('/', passport.authenticate('jwt', { session: false }), (req, res) => {
+  const { errors, isValid } = validateProfileInput(req.body);
+  // Check validation
+  if (!isValid) {
+    // Return errors with status code 400
+    return res.status(400).json(errors);
+  }
   // Get fields
   const profileFields = {};
   profileFields.social = {};
