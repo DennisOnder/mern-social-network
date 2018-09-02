@@ -59,6 +59,7 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
   if (req.body.facebook) profileFields.facebook = req.body.social.facebook;
   if (req.body.instagram) profileFields.instagram = req.body.social.instagram;
   Profile.findOne({ user: req.user.id })
+    .populate('user', ['name', 'avatar'])
     .then(profile => {
       if (profile) {
         // Update
@@ -80,6 +81,57 @@ router.post('/', passport.authenticate('jwt', { session: false }), (req, res) =>
           });
       }
     });
+});
+
+// @route  GET api/profile/all
+// @desc   Get profile data from all profiles
+// @access Public
+router.get('/all', (req, res) => {
+  const errors = {};
+  Profile.find()
+    .populate('user', ['name', 'avatar'])
+    .then(profiles => {
+      if (!profiles) {
+        errors.noprofiles = 'No profiles have been found.';
+        return res.status(404).json(errors);
+      }
+      res.json(profiles);
+    })
+    .catch(err => res.status(404).json({noprofiles: 'No profiles have been found.'}));
+})
+
+// @route  GET api/profile/handle/:handle
+// @desc   Get profile data from other users by handle
+// @access Public
+router.get('/handle/:handle', (req, res) => {
+  const errors = {};
+  Profile.findOne({ handle: req.params.handle })
+    .populate('user', ['name', 'avatar'])
+    .then(profile => {
+      if (!profile) {
+        errors.profile = 'There is no profile for this user.';
+        res.status(404).json(errors);
+      }
+      res.json(profile);
+    })
+    .catch(err => res.status(404).json(err));
+});
+
+// @route  GET api/profile/user/:user_id
+// @desc   Get profile data from other users by ID
+// @access Public
+router.get('/user/:user_id', (req, res) => {
+  const errors = {};
+  Profile.findOne({ user: req.params.user_id })
+    .populate('user', ['name', 'avatar'])
+    .then(profile => {
+      if (!profile) {
+        errors.profile = 'There is no profile for this user.';
+        res.status(404).json(errors);
+      }
+      res.json(profile);
+    })
+    .catch(err => res.status(404).json({ profile: 'There is no profile for this user.' }));
 });
 
 module.exports = router;
