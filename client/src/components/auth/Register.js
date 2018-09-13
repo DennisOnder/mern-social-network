@@ -15,7 +15,7 @@ class Register extends Component {
                 </div>
                 <div className="form-group">
                   <input type="email" className="form-control form-control-lg" placeholder="Email Address" name="email" />
-                  <small classNameName="form-text text-muted">This site uses Gravatar so if you want a profile image, use a Gravatar email</small>
+                  <small className="form-text text-muted">This site uses Gravatar so if you want a profile image, use a Gravatar email</small>
                 </div>
                 <div className="form-group">
                   <input type="password" className="form-control form-control-lg" placeholder="Password" name="password" />
